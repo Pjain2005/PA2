@@ -58,10 +58,44 @@ def fifo_misses(k: int, req: List[int]) -> int:
     return misses
 
 
-#stubs (i will implement later)
 def lru_misses(k: int, req: List[int]) -> int:
-    raise NotImplementedError
+    """
+    LRU eviction:
+    -keep track of items in cache.
+    -keep a list that stores usage order.
+      Front of list = least recently used
+      End of list = most recently used
+    """
+    if k <= 0:
+        return len(req)
 
+    cache = set()
+    usage_order = []   #left = least recent, right = most recent
+    misses = 0
 
+    for x in req:
+        if x in cache:
+            #move to the end (most recently used).
+            usage_order.remove(x)
+            usage_order.append(x)
+        else:
+            #a miss.
+            misses += 1
+
+            if len(cache) < k:
+                #space available
+                cache.add(x)
+                usage_order.append(x)
+            else:
+                #cache full → remove least recently used
+                lru_item = usage_order.pop(0)  #remove first element
+                cache.remove(lru_item)
+
+                cache.add(x)
+                usage_order.append(x)
+
+    return misses
+
+#Stub for OPTFF (left to implement)
 def optff_misses(k: int, req: List[int]) -> int:
     raise NotImplementedError

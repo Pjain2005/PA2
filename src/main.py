@@ -1,5 +1,5 @@
 import sys
-from cache import parse_input, fifo_misses
+from cache import parse_input, fifo_misses, lru_misses
 
 
 def main() -> int:
@@ -9,10 +9,12 @@ def main() -> int:
 
     k, _, req = parse_input(sys.argv[1])
     fifo = fifo_misses(k, req)
+    lru = lru_misses(k, req)
 
     print(f"FIFO : {fifo}")
-    #LRU and OPTFF will be added HERE later
-    
+    print(f"LRU : {lru}")
+    #OPTFF will be added later
+
     return 0
 
 
