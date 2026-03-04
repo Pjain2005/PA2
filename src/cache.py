@@ -96,6 +96,37 @@ def lru_misses(k: int, req: List[int]) -> int:
 
     return misses
 
-#Stub for OPTFF (left to implement)
 def optff_misses(k: int, req: List[int]) -> int:
-    raise NotImplementedError
+    if k <= 0:
+        return len(req)
+    
+    m = len(req)
+    INFINITY = float('inf')
+
+    # Precompute the next use of each item after each position.
+    # next_after[i] will be a dict mapping item to its next index >= i where it is requested again.
+    next_after: List[dict] = [None] * (m + 1)
+    next_after[m] = {}
+    running: dict = {}
+    for i in range(m - 1, -1, -1):
+        running[req[i]] = i #update next use of req[i] to current index
+        next_after[i] = dict(running) #make a copy of current next uses
+
+    cache: set = set()
+    misses = 0
+
+    for i, x in enumerate(req):
+        if x in cache:
+            continue  #hit
+
+        misses += 1  #miss
+        if len(cache) < k:
+            cache.add(x)
+        else:
+            # find the item in cache with the farthest next use
+            future = next_after[i + 1] # next uses of items after current index
+            evict = max(cache, key=lambda item: future.get(item, INFINITY))
+            cache.remove(evict)
+            cache.add(x)
+
+    return misses
